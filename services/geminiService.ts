@@ -7,7 +7,7 @@ import { ScientificEntry, LearningLevel, DetailLevel, Discipline, ContentType, E
  */
 
 export const getAIExplanation = async (entry: ScientificEntry, userLevel: LearningLevel, detail: DetailLevel) => {
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY });
   
   const detailInstruction = {
     [DetailLevel.SIMPLE]: "Vulgarisez au maximum. Utilisez des analogies simples et évitez le jargon complexe. Concentrez-vous sur l'intuition.",
@@ -55,7 +55,7 @@ export const getAIExplanation = async (entry: ScientificEntry, userLevel: Learni
  * Generate a complete ScientificEntry structure from raw input
  */
 export const generateScientificEntry = async (input: string, discipline?: Discipline, level?: LearningLevel): Promise<Partial<ScientificEntry> | null> => {
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY });
   
   const prompt = `
     En tant qu'architecte de la connaissance scientifique, transformez l'entrée suivante en un objet structuré conforme au registre Scientia.
@@ -128,7 +128,7 @@ export const generateScientificEntry = async (input: string, discipline?: Discip
 };
 
 export const suggestRelatedConcepts = async (entry: ScientificEntry, allTitles: string[]) => {
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY });
   
   const prompt = `
     En tant qu'architecte de la connaissance scientifique, analysez le concept suivant :

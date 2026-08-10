@@ -20,7 +20,10 @@ import {
 type ActiveView = 'registry' | 'dashboard' | 'favorites';
 
 const AppContent: React.FC = () => {
-  const [entries, setEntries] = useState<ScientificEntry[]>(INITIAL_ENTRIES);
+  const [entries, setEntries] = useState<ScientificEntry[]>(() => {
+    const saved = localStorage.getItem('scientia_entries');
+    return saved ? JSON.parse(saved) : INITIAL_ENTRIES;
+  });
   const [selectedEntry, setSelectedEntry] = useState<ScientificEntry | null>(null);
   const [activeDiscipline, setActiveDiscipline] = useState<Discipline | null>(null);
   const [activeLevel, setActiveLevel] = useState<LearningLevel | null>(null);
@@ -54,6 +57,10 @@ const AppContent: React.FC = () => {
     const saved = localStorage.getItem('scientia_progress');
     return saved ? JSON.parse(saved) : {};
   });
+
+  useEffect(() => {
+    localStorage.setItem('scientia_entries', JSON.stringify(entries));
+  }, [entries]);
 
   useEffect(() => {
     localStorage.setItem('scientia_progress', JSON.stringify(userProgress));
