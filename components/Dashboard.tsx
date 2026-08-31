@@ -37,11 +37,14 @@ export const Dashboard: React.FC<DashboardProps> = ({ entries, userRole }) => {
       return acc + (score / 3);
     }, 0);
 
+    const activePct = total > 0 ? Math.round((active / total) * 100) : 0;
+
     return {
       total,
       active,
       pending,
       draft,
+      activePct,
       disciplineStats,
       levelStats,
       avgCompleteness: total > 0 ? (completeness / total) * 100 : 0
@@ -68,7 +71,11 @@ export const Dashboard: React.FC<DashboardProps> = ({ entries, userRole }) => {
             <div className="p-3 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-2xl">
               <Database size={24} />
             </div>
-            <span className="text-[10px] font-bold text-emerald-500 bg-emerald-50 dark:bg-emerald-900/20 px-2 py-1 rounded-lg">+12%</span>
+            {stats.activePct > 0 && (
+              <span className="text-[10px] font-bold text-emerald-500 bg-emerald-50 dark:bg-emerald-900/20 px-2 py-1 rounded-lg">
+                {stats.activePct}% actifs
+              </span>
+            )}
           </div>
           <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Total Concepts</p>
           <h3 className="text-3xl font-black text-slate-900 dark:text-white">{stats.total}</h3>

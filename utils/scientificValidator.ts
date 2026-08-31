@@ -67,6 +67,6 @@ export const validateScientificEntry = (entry: Partial<ScientificEntry>): Valida
 export const normalizeScientificText = (text: string): string => {
   return text
     .replace(/\s+/g, ' ')
-    .replace(/(\d)\s*([xX*])\s*(\d)/g, '$1 \times $3') // Normalize multiplication cross
+    .replace(/(\d)\s*([xX*])\s*(\d)/g, '$1 \\times $3') // Normalize multiplication cross
     .trim();
 };

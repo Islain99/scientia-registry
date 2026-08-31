@@ -1,8 +1,9 @@
 
 import React, { useState } from 'react';
-import { Discipline, LearningLevel, ContentType, ScientificEntry, EntryOrigin, EntryStatus } from '../types';
+import { Discipline, LearningLevel, ContentType, ScientificEntry, EntryOrigin, EntryStatus, ValidationError } from '../types';
 import { generateScientificEntry } from '../services/geminiService';
-import { X, Sparkles, Send, Brain, Save, AlertCircle, RefreshCw } from 'lucide-react';
+import { validateScientificEntry } from '../utils/scientificValidator';
+import { X, Sparkles, Send, Brain, Save, AlertCircle, RefreshCw, XCircle } from 'lucide-react';
 import { useNotification } from './NotificationSystem';
 
 interface EntryModalProps {
@@ -15,6 +16,7 @@ export const EntryModal: React.FC<EntryModalProps> = ({ onClose, onSave, initial
   const [mode, setMode] = useState<'manual' | 'ai'>('manual');
   const [loading, setLoading] = useState(false);
   const [aiInput, setAiInput] = useState('');
+  const [validationErrors, setValidationErrors] = useState<ValidationError[]>([]);
   const { notify } = useNotification();
 
   const [formData, setFormData] = useState<Partial<ScientificEntry>>(initialData || {
@@ -58,10 +60,33 @@ export const EntryModal: React.FC<EntryModalProps> = ({ onClose, onSave, initial
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // In a real app, generate a real unique ID and validate schema
+
+    // Validate before saving
+    const errors = validateScientificEntry(formData);
+    const blockingErrors = errors.filter(err => err.severity === 'error');
+    setValidationErrors(errors);
+
+    if (blockingErrors.length > 0) {
+      notify({
+        type: 'error',
+        title: 'Validation échouée',
+        message: `${blockingErrors.length} erreur(s) à corriger avant l'enregistrement.`
+      });
+      return;
+    }
+
+    if (errors.length > 0) {
+      // Only warnings — notify but proceed
+      notify({
+        type: 'warning',
+        title: 'Avertissements pédagogiques',
+        message: 'Le concept a été enregistré avec des avertissements. Vérifiez le niveau de complexité.'
+      });
+    }
+
     onSave({
       ...formData as ScientificEntry,
-      id: formData.id || Math.random().toString(36).substr(2, 9),
+      id: formData.id || crypto.randomUUID(),
       createdAt: formData.createdAt || Date.now(),
       updatedAt: Date.now(),
       version: (formData.version || 0) + 1
@@ -199,6 +224,28 @@ export const EntryModal: React.FC<EntryModalProps> = ({ onClose, onSave, initial
                     Assurez-vous que l'énoncé LaTeX est correct. Les macros Scientia (\infint, \reaction, etc.) sont disponibles. Toute modification majeure réinitialisera le statut à "En révision".
                   </p>
               </div>
+
+              {/* Validation errors panel */}
+              {validationErrors.length > 0 && (
+                <div className="space-y-2">
+                  {validationErrors.map((err, i) => (
+                    <div
+                      key={i}
+                      className={`flex items-start gap-3 p-3 rounded-xl text-[11px] font-medium ${
+                        err.severity === 'error'
+                          ? 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800'
+                          : 'bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800'
+                      }`}
+                    >
+                      {err.severity === 'error'
+                        ? <XCircle size={14} className="flex-shrink-0 mt-px" />
+                        : <AlertCircle size={14} className="flex-shrink-0 mt-px" />
+                      }
+                      <span><strong>{err.field} :</strong> {err.message}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
             </form>
           )}
         </div>
