@@ -1,11 +1,12 @@
 from pydantic_settings import BaseSettings
 from typing import List
+import os
 
 
 class Settings(BaseSettings):
     # MongoDB
-    MONGODB_URL: str = "mongodb://localhost:27017"
-    MONGODB_DB: str = "scientia"
+    MONGODB_URL: str = os.getenv("MONGODB_URL", "mongodb://localhost:27017")
+    MONGODB_DB: str = os.getenv("MONGODB_DB", "mydatabase")
 
     # JWT
     JWT_SECRET: str = "change_me"
@@ -17,7 +18,7 @@ class Settings(BaseSettings):
     GEMINI_API_KEY: str = ""
 
     # CORS
-    CORS_ORIGINS: str = "http://localhost:5173"
+    CORS_ORIGINS: str = os.getenv("CORS_ORIGINS", "http://localhost:3000,http://localhost:8000")
 
     @property
     def cors_origins_list(self) -> List[str]:
