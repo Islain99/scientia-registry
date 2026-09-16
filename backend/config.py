@@ -6,7 +6,7 @@ import os
 class Settings(BaseSettings):
     # MongoDB
     MONGODB_URL: str = os.getenv("MONGODB_URL", "mongodb://localhost:27017")
-    MONGODB_DB: str = os.getenv("MONGODB_DB", "mydatabase")
+    MONGODB_DB: str = os.getenv("MONGODB_DB", "scientia")
 
     # JWT
     JWT_SECRET: str = "change_me"
