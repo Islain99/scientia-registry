@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { EntryStatus, EntryOrigin, UserRole } from '../types';
+import { EntryStatus, EntryOrigin, UserRole } from '../../types';
 import { 
   CheckCircle, Clock, Archive, Trash2, Edit3, 
   Sparkles, User, ShieldCheck, AlertCircle 

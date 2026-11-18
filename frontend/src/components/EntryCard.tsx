@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { ScientificEntry, ProgressStatus } from '../types';
+import { ScientificEntry, ProgressStatus } from '../../types';
 import { LatexRenderer } from './LatexRenderer';
 import { ExternalLink, Tag, CheckCircle2, CircleDashed, Star } from 'lucide-react';
 

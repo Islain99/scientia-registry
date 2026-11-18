@@ -1,14 +1,14 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
-import { Sidebar } from './components/Sidebar';
-import { EntryCard } from './components/EntryCard';
-import { EntryDetails } from './components/EntryDetails';
-import { EntryModal } from './components/EntryModal';
-import { LoginModal } from './components/LoginModal';
-import { Dashboard } from './components/Dashboard';
+import { Sidebar } from './src/components/Sidebar';
+import { EntryCard } from './src/components/EntryCard';
+import { EntryDetails } from './src/components/EntryDetails';
+import { EntryModal } from './src/components/EntryModal';
+import { LoginModal } from './src/components/LoginModal';
+import { Dashboard } from './src/components/Dashboard';
 import { ScientificEntry, Discipline, LearningLevel, ProgressStatus, UserProgress, UserRole, Permission, EntryStatus } from './types';
-import { RoleGuard, usePermissions } from './components/RoleGuard';
-import { ErrorBoundary } from './components/ErrorBoundary';
-import { NotificationProvider, useNotification } from './components/NotificationSystem';
+import { RoleGuard, usePermissions } from './src/components/RoleGuard';
+import { ErrorBoundary } from './src/components/ErrorBoundary';
+import { NotificationProvider, useNotification } from './src/components/NotificationSystem';
 import { authService, UserPublic } from './services/authService';
 import { entriesService } from './services/entriesService';
 import {

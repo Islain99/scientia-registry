@@ -1,6 +1,6 @@
 
 import React, { useMemo } from 'react';
-import { ScientificEntry, Discipline, LearningLevel, EntryStatus, UserRole, ContentType } from '../types';
+import { ScientificEntry, Discipline, LearningLevel, EntryStatus, UserRole, ContentType } from '../../types';
 import { 
   BarChart3, PieChart, Users, BookOpen, AlertCircle, 
   TrendingUp, CheckCircle2, FileText, Database, ShieldCheck 

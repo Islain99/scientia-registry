@@ -1,8 +1,8 @@
 
 import React, { useState } from 'react';
-import { Discipline, LearningLevel, ContentType, ScientificEntry, EntryOrigin, EntryStatus, ValidationError } from '../types';
-import { generateScientificEntry } from '../services/geminiService';
-import { validateScientificEntry } from '../utils/scientificValidator';
+import { Discipline, LearningLevel, ContentType, ScientificEntry, EntryOrigin, EntryStatus, ValidationError } from '../../types';
+import { generateScientificEntry } from '../../services/geminiService';
+import { validateScientificEntry } from '../../utils/scientificValidator';
 import { X, Sparkles, Send, Brain, Save, AlertCircle, RefreshCw, XCircle } from 'lucide-react';
 import { useNotification } from './NotificationSystem';
 

@@ -1,7 +1,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { Terminal, AlertTriangle, ShieldAlert, Info, CheckCircle, AlertCircle } from 'lucide-react';
-import { LATEX_MACROS } from '../latexConfig';
+import { LATEX_MACROS } from '../../latexConfig';
 
 interface LatexRendererProps {
   formula: string;

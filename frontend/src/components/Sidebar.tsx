@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Discipline, LearningLevel, UserRole, Permission } from '../types';
+import { Discipline, LearningLevel, UserRole, Permission } from '../../types';
 import { RoleGuard } from './RoleGuard';
 import { 
   BookOpen, FlaskConical, Atom, Binary, GraduationCap, Map, 

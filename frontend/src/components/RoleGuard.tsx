@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Permission, UserRole, ROLE_PERMISSIONS } from '../types';
+import { Permission, UserRole, ROLE_PERMISSIONS } from '../../types';
 
 interface RoleGuardProps {
   userRole: UserRole;

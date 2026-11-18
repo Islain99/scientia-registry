@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { GraduationCap, Mail, Lock, User, LogIn, UserPlus, RefreshCw, AlertCircle } from 'lucide-react';
-import { authService, UserPublic } from '../services/authService';
+import { authService, UserPublic } from '../../services/authService';
 
 interface LoginModalProps {
   onSuccess: (user: UserPublic) => void;

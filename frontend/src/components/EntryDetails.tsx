@@ -1,8 +1,8 @@
 
 import React, { useState, useEffect } from 'react';
-import { ScientificEntry, LearningLevel, ProgressStatus, UserProgress, DetailLevel, UserRole, Permission, EntryStatus } from '../types';
+import { ScientificEntry, LearningLevel, ProgressStatus, UserProgress, DetailLevel, UserRole, Permission, EntryStatus } from '../../types';
 import { LatexRenderer } from './LatexRenderer';
-import { getAIExplanation, suggestRelatedConcepts } from '../services/geminiService';
+import { getAIExplanation, suggestRelatedConcepts } from '../../services/geminiService';
 import { RoleGuard } from './RoleGuard';
 import { LifecycleManager } from './LifecycleManager';
 import { 

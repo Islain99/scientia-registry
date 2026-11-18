@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, createContext, useContext, useCallback } from 'react';
 import { AlertCircle, CheckCircle2, Info, X, AlertTriangle } from 'lucide-react';
-import { SystemNotification } from '../types';
+import { SystemNotification } from '../../types';
 
 interface NotificationContextType {
   notify: (n: Omit<SystemNotification, 'id'>) => void;
