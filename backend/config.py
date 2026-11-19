@@ -1,15 +1,14 @@
 from pydantic_settings import BaseSettings
 from typing import List
-import os
 
 
 class Settings(BaseSettings):
     # MongoDB
-    MONGODB_URL: str = os.getenv("MONGODB_URL", "mongodb://localhost:27017")
-    MONGODB_DB: str = os.getenv("MONGODB_DB", "scientia")
+    MONGODB_URL: str = "mongodb://localhost:27017"
+    MONGODB_DB: str = "scientia"
 
     # JWT
-    JWT_SECRET: str = os.getenv("JWT_SECRET", "supersecretkey")
+    JWT_SECRET: str = "supersecretkey"
     JWT_ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
     REFRESH_TOKEN_EXPIRE_DAYS: int = 30
@@ -17,8 +16,8 @@ class Settings(BaseSettings):
     # Gemini — stays server-side
     GEMINI_API_KEY: str = ""
 
-    # CORS
-    CORS_ORIGINS: str = os.getenv("CORS_ORIGINS", "http://localhost:3000,http://localhost:8000")
+    # CORS — pydantic-settings lit automatiquement la variable d'env CORS_ORIGINS
+    CORS_ORIGINS: str = "http://localhost:3000,http://localhost:8000"
 
     @property
     def cors_origins_list(self) -> List[str]:

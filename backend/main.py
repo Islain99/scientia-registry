@@ -8,6 +8,7 @@ from routers import auth, entries, users, ai
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    print(f"[CORS] Origins autorisées : {settings.cors_origins_list}", flush=True)
     await connect_db()
     yield
     await close_db()
