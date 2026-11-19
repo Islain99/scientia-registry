@@ -9,7 +9,7 @@ class Settings(BaseSettings):
     MONGODB_DB: str = os.getenv("MONGODB_DB", "scientia")
 
     # JWT
-    JWT_SECRET: str = "change_me"
+    JWT_SECRET: str = os.getenv("JWT_SECRET", "supersecretkey")
     JWT_ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
     REFRESH_TOKEN_EXPIRE_DAYS: int = 30
