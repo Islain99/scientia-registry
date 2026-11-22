@@ -34,7 +34,7 @@ interface BackendEntry {
   references: string[];
   related_ids: string[];
   last_modified_by?: string | null;
-  created_by?: string | null;
+  created_by?: string | null;    // user ID of creator
   created_at: number;
   updated_at: number;
   status: string;
@@ -51,7 +51,7 @@ interface PaginatedBackend {
 }
 
 interface BackendProgress {
-  status: string;
+  status: number;        // ProgressStatus is an int enum (0/1/2) in Python
   last_updated: number;
 }
 
@@ -78,24 +78,27 @@ export interface ListFilters {
 
 function toFrontend(e: BackendEntry): ScientificEntry {
   return {
-    id:         e.id,
-    title:      e.title,
-    discipline: e.discipline  as ScientificEntry['discipline'],
-    level:      e.level       as ScientificEntry['level'],
-    type:       e.type        as ScientificEntry['type'],
-    definition: e.definition,
-    statement:  e.statement,
-    context:    e.context,
-    examples:   e.examples,
-    exercises:  e.exercises   as ScientificEntry['exercises'],
-    keywords:   e.keywords,
-    references: e.references,
-    relatedIds: e.related_ids,
-    status:     e.status      as ScientificEntry['status'],
-    origin:     e.origin      as ScientificEntry['origin'],
-    version:    e.version,
-    createdAt:  e.created_at,
-    updatedAt:  e.updated_at,
+    id:             e.id,
+    title:          e.title,
+    discipline:     e.discipline       as ScientificEntry['discipline'],
+    subDiscipline:  e.sub_discipline   ?? undefined,
+    level:          e.level            as ScientificEntry['level'],
+    type:           e.type             as ScientificEntry['type'],
+    definition:     e.definition,
+    statement:      e.statement,
+    context:        e.context,
+    examples:       e.examples,
+    exercises:      e.exercises        as ScientificEntry['exercises'],
+    keywords:       e.keywords,
+    references:     e.references,
+    relatedIds:     e.related_ids,
+    lastModifiedBy: e.last_modified_by ?? undefined,
+    createdBy:      e.created_by       ?? undefined,
+    status:         e.status           as ScientificEntry['status'],
+    origin:         e.origin           as ScientificEntry['origin'],
+    version:        e.version,
+    createdAt:      e.created_at,
+    updatedAt:      e.updated_at,
   };
 }
 
@@ -112,8 +115,9 @@ function toBackend(e: Partial<ScientificEntry>): Record<string, unknown> {
   if (e.exercises  !== undefined) out.exercises   = e.exercises;
   if (e.keywords   !== undefined) out.keywords    = e.keywords;
   if (e.references !== undefined) out.references  = e.references;
-  if (e.relatedIds !== undefined) out.related_ids = e.relatedIds;
-  if (e.origin     !== undefined) out.origin      = e.origin;
+  if (e.relatedIds    !== undefined) out.related_ids   = e.relatedIds;
+  if (e.subDiscipline !== undefined) out.sub_discipline = e.subDiscipline;
+  if (e.origin        !== undefined) out.origin         = e.origin;
   return out;
 }
 

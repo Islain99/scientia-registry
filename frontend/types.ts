@@ -91,12 +91,13 @@ export interface ScientificEntry {
   definition: string;
   statement: string; // LaTeX formatted
   context: string;
-  examples: string[]; 
+  examples: string[];
   exercises: Exercise[];
   keywords: string[];
   references: string[];
-  relatedIds?: string[];
-  lastModifiedBy?: string;
+  relatedIds: string[];       // always present (empty array by default)
+  lastModifiedBy?: string;    // user ID of last editor
+  createdBy?: string;         // user ID of creator
   createdAt: number;
   updatedAt: number;
   status: EntryStatus;
