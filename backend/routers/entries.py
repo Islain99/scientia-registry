@@ -19,7 +19,7 @@ async def list_entries(
     entry_status: Optional[str] = Query(default=None, alias="status"),
     search: Optional[str] = Query(default=None),
     page: int = Query(default=1, ge=1),
-    limit: int = Query(default=20, ge=1, le=100),
+    limit: int = Query(default=20, ge=1, le=500),
     db: AsyncIOMotorDatabase = Depends(get_db),
     current_user: UserDocument = Depends(get_current_user),
 ):
