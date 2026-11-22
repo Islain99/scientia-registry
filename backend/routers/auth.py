@@ -99,3 +99,36 @@ async def me(current_user: UserDocument = Depends(get_current_user)):
         favorites=current_user.favorites,
         created_at=current_user.created_at,
     )
+
+
+@router.post("/setup-admin", response_model=UserPublic)
+async def setup_admin(
+    db: AsyncIOMotorDatabase = Depends(get_db),
+    current_user: UserDocument = Depends(get_current_user),
+):
+    """
+    Promeut l'utilisateur connecté en admin.
+    Ne fonctionne QUE si aucun admin n'existe encore dans la base.
+    Après le premier appel réussi, cet endpoint est définitivement bloqué.
+    """
+    admin_exists = await db["users"].find_one({"role": UserRole.ADMIN})
+    if admin_exists:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Un administrateur existe déjà. Contactez-le pour obtenir des droits supplémentaires.",
+        )
+
+    now = int(time() * 1000)
+    await db["users"].update_one(
+        {"_id": ObjectId(current_user.id)},
+        {"$set": {"role": UserRole.ADMIN, "updated_at": now}},
+    )
+
+    return UserPublic(
+        id=current_user.id,
+        name=current_user.name,
+        email=current_user.email,
+        role=UserRole.ADMIN,
+        favorites=current_user.favorites,
+        created_at=current_user.created_at,
+    )
