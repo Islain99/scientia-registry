@@ -2,8 +2,8 @@
 import React from 'react';
 import { Discipline, LearningLevel, UserRole, Permission } from '../../types';
 import { RoleGuard } from './RoleGuard';
-import { 
-  BookOpen, FlaskConical, Atom, Binary, GraduationCap, Map, 
+import {
+  BookOpen, FlaskConical, Atom, Binary, GraduationCap, Map,
   Globe, Database, Settings, Moon, Sun, Star, Home,
   ShieldCheck, UserCog, History, BarChart3, DatabaseZap
 } from 'lucide-react';
@@ -14,6 +14,8 @@ interface SidebarProps {
   activeLevel: LearningLevel | null;
   onSelectLevel: (l: LearningLevel | null) => void;
   disciplineProgress: Record<Discipline, number>;
+  /** Nombre d'entrées actives par discipline — affiché quand la progression est à 0 */
+  disciplineCounts: Record<Discipline, number>;
   isDarkMode: boolean;
   onToggleDarkMode: () => void;
   showOnlyFavorites: boolean;
@@ -23,10 +25,11 @@ interface SidebarProps {
   activeView: string;
 }
 
-export const Sidebar: React.FC<SidebarProps> = ({ 
-  activeDiscipline, onSelectDiscipline, 
+export const Sidebar: React.FC<SidebarProps> = ({
+  activeDiscipline, onSelectDiscipline,
   activeLevel, onSelectLevel,
   disciplineProgress,
+  disciplineCounts,
   isDarkMode,
   onToggleDarkMode,
   showOnlyFavorites,
@@ -40,15 +43,33 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
   const getIcon = (d: Discipline) => {
     switch(d) {
-      case Discipline.MATHEMATICS: return <Binary size={18} />;
-      case Discipline.PHYSICS: return <Atom size={18} />;
-      case Discipline.CHEMISTRY: return <FlaskConical size={18} />;
-      case Discipline.BIOLOGY: return <BookOpen size={18} />;
-      case Discipline.COMPUTER_SCIENCE: return <Database size={18} />;
-      case Discipline.GEOGRAPHY: return <Map size={18} />;
-      case Discipline.GEOLOGY: return <Globe size={18} />;
-      default: return <Settings size={18} />;
+      case Discipline.MATHEMATICS:     return <Binary size={18} />;
+      case Discipline.PHYSICS:         return <Atom size={18} />;
+      case Discipline.CHEMISTRY:       return <FlaskConical size={18} />;
+      case Discipline.BIOLOGY:         return <BookOpen size={18} />;
+      case Discipline.COMPUTER_SCIENCE:return <Database size={18} />;
+      case Discipline.GEOGRAPHY:       return <Map size={18} />;
+      case Discipline.GEOLOGY:         return <Globe size={18} />;
+      default:                         return <Settings size={18} />;
     }
+  };
+
+  /**
+   * Badge affiché à droite du nom de la discipline :
+   *  - progress > 0  → "X%"  (progression de maîtrise)
+   *  - progress == 0 → "N"   (nombre d'entrées actives)
+   *  - 0 entrée      → "—"
+   */
+  const getDisciplineBadge = (d: Discipline, progress: number): string => {
+    if (progress > 0) return `${Math.round(progress)}%`;
+    const count = disciplineCounts[d] ?? 0;
+    return count > 0 ? String(count) : '—';
+  };
+
+  /** Couleur du badge selon son contenu */
+  const getBadgeClass = (progress: number): string => {
+    if (progress > 0) return 'text-indigo-500 dark:text-indigo-400 font-semibold';
+    return 'text-slate-400 dark:text-slate-500';
   };
 
   return (
@@ -58,7 +79,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           <GraduationCap className="text-indigo-600 dark:text-indigo-500" />
           Scientia
         </h1>
-        <button 
+        <button
           onClick={onToggleDarkMode}
           className="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:text-indigo-600 transition-all"
         >
@@ -67,10 +88,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
       </div>
 
       <div className="space-y-6 flex-grow">
+        {/* ── Navigation ───────────────────────────────────────────── */}
         <div>
           <h2 className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-4">Navigation</h2>
           <div className="space-y-1">
-            <button 
+            <button
               onClick={() => { onSelectDiscipline(null); onSelectLevel(null); }}
               className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all flex items-center gap-3 ${activeView === 'registry' && !activeDiscipline && !activeLevel ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-400 font-bold' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-900'}`}
             >
@@ -78,25 +100,25 @@ export const Sidebar: React.FC<SidebarProps> = ({
               <span>Accueil</span>
             </button>
             <RoleGuard userRole={userRole} requiredRole={[UserRole.STUDENT, UserRole.TEACHER, UserRole.ADMIN]}>
-                <button 
+              <button
                 onClick={() => onToggleFavorites()}
                 className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all flex items-center gap-3 ${activeView === 'favorites' ? 'bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 font-bold' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-900'}`}
-                >
-                <Star size={18} className={activeView === 'favorites' ? "fill-current" : ""} />
+              >
+                <Star size={18} className={activeView === 'favorites' ? 'fill-current' : ''} />
                 <span>Favoris</span>
-                </button>
+              </button>
             </RoleGuard>
           </div>
         </div>
 
-        {/* Admin Section */}
+        {/* ── Administration ───────────────────────────────────────── */}
         <RoleGuard userRole={userRole} requiredRole={[UserRole.ADMIN]}>
           <div>
             <h2 className="text-[10px] font-bold text-red-500 uppercase tracking-widest mb-4 flex items-center gap-2">
-                <UserCog size={10} /> Administration
+              <UserCog size={10} /> Administration
             </h2>
             <div className="space-y-1">
-              <button 
+              <button
                 onClick={onSelectDashboard}
                 className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all flex items-center gap-3 ${activeView === 'dashboard' ? 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 font-bold' : 'text-slate-600 dark:text-slate-400 hover:bg-red-50 dark:hover:bg-red-950/20 hover:text-red-600'}`}
               >
@@ -111,30 +133,49 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </div>
         </RoleGuard>
 
+        {/* ── Disciplines ───────────────────────────────────────────── */}
         <div>
           <h2 className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-4">Disciplines</h2>
           <div className="space-y-1">
             {disciplines.map(d => {
-              const progress = disciplineProgress[d] || 0;
+              const progress = disciplineProgress[d] ?? 0;
+              const badge    = getDisciplineBadge(d, progress);
+              const badgeCls = getBadgeClass(progress);
               return (
-                <button 
+                <button
                   key={d}
                   onClick={() => onSelectDiscipline(d)}
                   className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all group ${activeDiscipline === d ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-400 font-bold shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-900'}`}
                 >
                   <div className="flex items-center gap-3 mb-1.5">
-                    <span className={activeDiscipline === d ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400 group-hover:text-indigo-400'}>{getIcon(d)}</span>
-                    <span className="flex-grow">{d}</span>
+                    <span className={activeDiscipline === d ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400 group-hover:text-indigo-400'}>
+                      {getIcon(d)}
+                    </span>
+                    <span className="flex-grow truncate">{d}</span>
+
+                    {/* Badge : % si progression, sinon count d'entrées */}
                     <RoleGuard userRole={userRole} requiredRole={[UserRole.STUDENT, UserRole.TEACHER, UserRole.ADMIN]}>
-                        <span className="text-[10px] text-slate-400">{Math.round(progress)}%</span>
+                      <span className={`text-[10px] tabular-nums flex-shrink-0 ${badgeCls}`}>
+                        {badge}
+                      </span>
                     </RoleGuard>
                   </div>
+
+                  {/* Barre de progression — visible uniquement pour les utilisateurs authentifiés */}
                   <RoleGuard userRole={userRole} requiredRole={[UserRole.STUDENT, UserRole.TEACHER, UserRole.ADMIN]}>
-                    <div className="h-1 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
-                        <div 
-                        className="h-full bg-indigo-500 dark:bg-indigo-600 transition-all duration-700 ease-out" 
-                        style={{ width: `${progress}%` }}
-                        />
+                    <div
+                      className="h-1 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden"
+                      title={progress > 0 ? `${Math.round(progress)}% maîtrisé` : `${disciplineCounts[d] ?? 0} entrée(s)`}
+                    >
+                      <div
+                        className={`h-full transition-all duration-700 ease-out ${
+                          progress >= 80 ? 'bg-emerald-500 dark:bg-emerald-600' :
+                          progress >= 40 ? 'bg-indigo-500 dark:bg-indigo-600' :
+                          progress >  0  ? 'bg-blue-400 dark:bg-blue-500' :
+                          'bg-transparent'
+                        }`}
+                        style={{ width: `${Math.max(0, Math.min(100, progress))}%` }}
+                      />
                     </div>
                   </RoleGuard>
                 </button>
@@ -143,11 +184,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </div>
         </div>
 
+        {/* ── Niveaux ──────────────────────────────────────────────── */}
         <div>
           <h2 className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-4">Niveaux</h2>
           <div className="space-y-1">
             {levels.map(l => (
-              <button 
+              <button
                 key={l}
                 onClick={() => onSelectLevel(l)}
                 className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all ${activeLevel === l ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 font-bold border-l-4 border-blue-600 pl-2' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-900'}`}
@@ -159,10 +201,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </div>
       </div>
 
+      {/* ── Footer ───────────────────────────────────────────────── */}
       <div className="pt-6 border-t dark:border-slate-800 text-center space-y-2">
         <div className="flex items-center justify-center gap-2">
-            <span className={`w-2 h-2 rounded-full animate-pulse ${userRole === UserRole.ADMIN ? 'bg-red-500' : userRole === UserRole.TEACHER ? 'bg-emerald-500' : 'bg-blue-500'}`}></span>
-            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">{userRole} MODE</p>
+          <span className={`w-2 h-2 rounded-full animate-pulse ${userRole === UserRole.ADMIN ? 'bg-red-500' : userRole === UserRole.TEACHER ? 'bg-emerald-500' : 'bg-blue-500'}`}></span>
+          <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">{userRole} MODE</p>
         </div>
         <p className="text-[10px] text-slate-400 font-medium">Scientia Enterprise v2.0.1</p>
       </div>

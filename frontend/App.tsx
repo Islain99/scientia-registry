@@ -230,6 +230,19 @@ const AppContent: React.FC = () => {
     return stats as Record<Discipline, number>;
   }, [entries, userProgress]);
 
+  /**
+   * Nombre d'entrées actives par discipline.
+   * Affiché dans le Sidebar comme compteur quand la progression est à 0%
+   * (aucune activité enregistrée pour cette discipline).
+   */
+  const disciplineCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    Object.values(Discipline).forEach(d => {
+      counts[d] = entries.filter(e => e.discipline === d && e.status === EntryStatus.ACTIVE).length;
+    });
+    return counts as Record<Discipline, number>;
+  }, [entries]);
+
   const globalProgress = useMemo(() => {
     const active = entries.filter(e => e.status === EntryStatus.ACTIVE);
     if (active.length === 0) return 0;
@@ -281,6 +294,7 @@ const AppContent: React.FC = () => {
         activeLevel={activeLevel}
         onSelectLevel={(l) => { setActiveLevel(l); setActiveView('registry'); setSelectedEntry(null); }}
         disciplineProgress={disciplineProgress}
+        disciplineCounts={disciplineCounts}
         isDarkMode={isDarkMode}
         onToggleDarkMode={() => setIsDarkMode(!isDarkMode)}
         showOnlyFavorites={activeView === 'favorites'}
