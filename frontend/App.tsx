@@ -257,7 +257,12 @@ const AppContent: React.FC = () => {
         if (entry.status !== EntryStatus.ACTIVE) return false;
         if (userRole === UserRole.GUEST && entry.level !== LearningLevel.PRIMARY && entry.level !== LearningLevel.SECONDARY) return false;
       }
-      const matchesSearch     = entry.title.toLowerCase().includes(searchQuery.toLowerCase());
+      const q = searchQuery.toLowerCase();
+      const matchesSearch     = !q
+        || entry.title.toLowerCase().includes(q)
+        || entry.definition.toLowerCase().includes(q)
+        || (entry.keywords ?? []).some(kw => kw.toLowerCase().includes(q))
+        || (entry.subDiscipline ?? '').toLowerCase().includes(q);
       const matchesDiscipline = activeDiscipline ? entry.discipline === activeDiscipline : true;
       const matchesLevel      = activeLevel ? entry.level === activeLevel : true;
       const matchesFavorites  = activeView === 'favorites' ? favorites.includes(entry.id) : true;

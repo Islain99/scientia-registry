@@ -44,8 +44,8 @@ export const LATEX_MACROS: Record<string, string> = {
   "\\avg": "\\langle #1 \\rangle",
 
   // --- Algèbre et Combinatoire ---
-  "\\binom": "\\begin{pmatrix} #1 \\\\ #2 \\end{pmatrix}",
-  "\\frac": "\\frac{#1}{#2}", // Support explicite pour KaTeX
+  // NOTE: \binom et \frac sont des commandes KaTeX natives — ne pas les redéfinir.
+  // Redéfinir \frac provoque une récursion infinie dans KaTeX.
 
   // --- Systèmes et Alignements ---
   /**
@@ -74,10 +74,41 @@ export const LATEX_MACROS: Record<string, string> = {
 };
 
 /**
- * Valide si une chaîne contient des macros non supportées (pré-rendu).
+ * Commandes KaTeX natives — ne jamais les redéfinir dans LATEX_MACROS.
+ */
+const KATEX_NATIVE: Set<string> = new Set([
+  'frac', 'binom', 'sqrt', 'sum', 'int', 'prod', 'lim', 'infty', 'cdot',
+  'times', 'div', 'pm', 'mp', 'leq', 'geq', 'neq', 'approx', 'equiv',
+  'in', 'notin', 'subset', 'supset', 'cup', 'cap', 'emptyset', 'forall',
+  'exists', 'neg', 'land', 'lor', 'to', 'gets', 'Rightarrow', 'Leftarrow',
+  'Leftrightarrow', 'rightarrow', 'leftarrow', 'leftrightarrow',
+  'alpha', 'beta', 'gamma', 'delta', 'epsilon', 'zeta', 'eta', 'theta',
+  'iota', 'kappa', 'lambda', 'mu', 'nu', 'xi', 'pi', 'rho', 'sigma',
+  'tau', 'upsilon', 'phi', 'chi', 'psi', 'omega',
+  'Gamma', 'Delta', 'Theta', 'Lambda', 'Xi', 'Pi', 'Sigma', 'Upsilon',
+  'Phi', 'Psi', 'Omega',
+  'vec', 'hat', 'bar', 'dot', 'ddot', 'tilde', 'overline', 'underline',
+  'overbrace', 'underbrace', 'overset', 'underset', 'stackrel',
+  'mathbb', 'mathbf', 'mathit', 'mathrm', 'mathcal', 'mathsf', 'mathtt',
+  'text', 'left', 'right', 'big', 'Big', 'bigg', 'Bigg',
+  'begin', 'end', 'ce', 'nabla', 'partial', 'hbar', 'ell', 'Re', 'Im',
+  'overrightarrow', 'overleftarrow', 'operatorname', 'boldsymbol',
+]);
+
+/**
+ * Valide une chaîne LaTeX et retourne les macros non reconnues.
+ * Vérifie les macros custom non définies dans LATEX_MACROS et non natives KaTeX.
  */
 export const validateLatex = (formula: string): string[] => {
-  const customMacroPattern = /\\[a-zA-Z]+/g;
-  const foundMacros = formula.match(customMacroPattern) || [];
-  return [];
+  const errors: string[] = [];
+  const macroPattern = /\\([a-zA-Z]+)/g;
+  const customMacros = new Set(Object.keys(LATEX_MACROS).map(k => k.replace('\\\\', '')));
+  let match;
+  while ((match = macroPattern.exec(formula)) !== null) {
+    const name = match[1];
+    if (!KATEX_NATIVE.has(name) && !customMacros.has(`\\${name}`)) {
+      errors.push(`Macro non reconnue : \\${name}`);
+    }
+  }
+  return errors;
 };

@@ -41,6 +41,24 @@ export const EntryDetails: React.FC<EntryDetailsProps> = ({
   const [aiSuggestions, setAiSuggestions] = useState<string[]>([]);
   const [isSuggesting, setIsSuggesting] = useState(false);
 
+  /**
+   * Rend un texte mixte prose/LaTeX.
+   * Les délimiteurs $...$ (inline) et $$...$$ (display) sont passés à LatexRenderer.
+   * Le reste est affiché comme texte brut avec sauts de ligne.
+   */
+  const renderMixedLatex = (text: string) => {
+    const segments = text.split(/(\$\$[\s\S]+?\$\$|\$[^\n$]+?\$)/g);
+    return segments.map((seg, i) => {
+      if (seg.startsWith('$$') && seg.endsWith('$$')) {
+        return <LatexRenderer key={i} formula={seg.slice(2, -2).trim()} displayMode={true} className="my-3" />;
+      }
+      if (seg.startsWith('$') && seg.endsWith('$')) {
+        return <LatexRenderer key={i} formula={seg.slice(1, -1).trim()} displayMode={false} />;
+      }
+      return <span key={i} className="whitespace-pre-wrap">{seg}</span>;
+    });
+  };
+
   const fetchAIExplanation = async (detail: DetailLevel) => {
     setSelectedDetail(detail);
     setIsAiLoading(true);
@@ -488,8 +506,8 @@ ${entry.context}
 
                 {aiExplanation && !isAiLoading && (
                   <div className="animate-in fade-in slide-in-from-top-4 duration-500">
-                    <div className="bg-white/5 border border-white/10 p-8 rounded-2xl prose prose-invert max-w-none text-indigo-50 text-sm leading-relaxed whitespace-pre-wrap font-medium shadow-inner">
-                      {aiExplanation}
+                    <div className="bg-white/5 border border-white/10 p-8 rounded-2xl max-w-none text-indigo-50 text-sm leading-relaxed font-medium shadow-inner">
+                      {renderMixedLatex(aiExplanation)}
                     </div>
                     <div className="flex justify-between items-center mt-8">
                       <button 

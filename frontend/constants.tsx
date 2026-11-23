@@ -78,7 +78,7 @@ export const INITIAL_ENTRIES: ScientificEntry[] = [
     id: '8',
     title: 'Synthèse de l\'Eau',
     discipline: Discipline.CHEMISTRY,
-    subDiscipline: 'Thermodyamique Chimique',
+    subDiscipline: 'Thermodynamique Chimique',
     level: LearningLevel.SECONDARY,
     type: ContentType.EQUATION,
     definition: "Réaction d'oxydo-réduction exothermique produisant de l'eau à partir de dihydrogène et de dioxygène.",
