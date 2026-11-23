@@ -7,6 +7,7 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Dependency directories
 node_modules
 dist
 dist-ssr
@@ -26,3 +27,13 @@ dist-ssr
 # Variable D'environnement
 *.env
 .env.*
+
+# Build output
+build/
+
+# Miscellaneous
+*.pem
+
+# Files to ignore for the backend
+seed_entries.json
+*.ipynb
